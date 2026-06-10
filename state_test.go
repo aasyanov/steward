@@ -23,10 +23,10 @@ func TestStateString(t *testing.T) {
 }
 
 func TestFailureClassString(t *testing.T) {
-	if FailureTransient.String() != "transient" {
+	if FailureTransient.String() != failureClassTransientStr {
 		t.Fatal()
 	}
-	if FailureClass(99).String() != "fatal" {
+	if FailureClass(99).String() != failureClassFatalStr {
 		t.Fatal()
 	}
 }

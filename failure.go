@@ -17,16 +17,22 @@ const (
 	FailureFatal
 )
 
+const (
+	failureClassTransientStr  = "transient"
+	failureClassConfigErrorStr = "config_error"
+	failureClassFatalStr      = "fatal"
+)
+
 func (c FailureClass) String() string {
 	switch c {
 	case FailureTransient:
-		return "transient"
+		return failureClassTransientStr
 	case FailureConfigError:
-		return "config_error"
+		return failureClassConfigErrorStr
 	case FailureFatal:
 		fallthrough
 	default:
-		return "fatal"
+		return failureClassFatalStr
 	}
 }
 

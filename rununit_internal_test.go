@@ -26,10 +26,10 @@ func TestEventBusCloseWithAudit(t *testing.T) {
 }
 
 func TestFailureClassAllStrings(t *testing.T) {
-	if FailureConfigError.String() != "config_error" {
+	if FailureConfigError.String() != failureClassConfigErrorStr {
 		t.Fatal()
 	}
-	if FailureTransient.String() != "transient" {
+	if FailureTransient.String() != failureClassTransientStr {
 		t.Fatal()
 	}
 }
