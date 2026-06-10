@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-06-10
+
+### Added
+
+- **`LICENSE`** (MIT) — enables pkg.go.dev to display package documentation.
+
+### Fixed
+
+- **README badges** — CI, Go Reference, and License use shield images (consistent with slabix/uewal).
+
 ## [0.1.0] — 2026-06-10
 
 Initial public release — deterministic in-process lifecycle control plane for long-lived Go components.
@@ -52,5 +62,6 @@ Initial public release — deterministic in-process lifecycle control plane for 
 
 - Go 1.24+
 
-[Unreleased]: https://github.com/aasyanov/steward/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/aasyanov/steward/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/aasyanov/steward/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/aasyanov/steward/releases/tag/v0.1.0
