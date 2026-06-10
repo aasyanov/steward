@@ -1,8 +1,8 @@
 # steward — L2 Lifecycle Control Plane for Industrial Stack
 
-[CI](https://github.com/aasyanov/steward/actions/workflows/ci.yml)
-[Go Reference](https://pkg.go.dev/github.com/aasyanov/steward)
-[License: MIT](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/aasyanov/steward/actions/workflows/ci.yml/badge.svg)](https://github.com/aasyanov/steward/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/aasyanov/steward.svg)](https://pkg.go.dev/github.com/aasyanov/steward)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Deterministic in-process lifecycle control plane for long-lived Go components. Go 1.24+. Zero external dependencies.
 
