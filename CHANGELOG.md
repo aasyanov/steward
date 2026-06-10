@@ -41,8 +41,12 @@ Initial public release — deterministic in-process lifecycle control plane for 
 
 ### CI
 
-- GitHub Actions: lint (golangci-lint), test matrix (Go 1.24–1.26 × Linux/Windows), 90% coverage gate, fuzz (`FuzzDiff`, `FuzzReconcileSet`), benchmark artifacts.
-- Profile job runs `a-report-pprof.ps1` on Windows (push to `main`), uploads `a-report-*.md` and `profiles/` as artifacts (90-day retention).
+- GitHub Actions pipeline on `main` — **verified green** before release: lint, test, coverage, fuzz, benchmarks, profile.
+- **Lint** — `golangci-lint` v2.12+ via `.golangci.yml` (errcheck, govet, staticcheck, revive, gocritic, goconst, …).
+- **Test** — matrix Go 1.24–1.26 × Linux/Windows, `-race`, 90% coverage gate.
+- **Fuzz** — `FuzzDiff`, `FuzzReconcileSet`.
+- **Benchmarks** — artifacts on each run.
+- **Profile** — `a-report-pprof.ps1` on Windows (push to `main`); uploads `a-report-*.md` and `profiles/` (90-day retention).
 
 ### Dependencies
 
