@@ -1055,7 +1055,7 @@ For lossless audit trails, enable `WithAuditBuffer` and a dedicated fast consume
 
 ## Errors
 
-Four sentinel errors, all comparable with `==` and `errors.Is`:
+Three sentinel errors, all comparable with `==` and `errors.Is`:
 
 
 | Error               | When                                                 |

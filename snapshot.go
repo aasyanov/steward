@@ -14,7 +14,5 @@ type UnitView struct {
 }
 
 func copyUnitViews(units []UnitView) []UnitView {
-	out := make([]UnitView, len(units))
-	copy(out, units)
-	return out
+	return units
 }

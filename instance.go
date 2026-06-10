@@ -1,12 +1,16 @@
 package steward
 
-import "context"
+import (
+	"context"
+	"sync"
+)
 
 const singletonKey = "default"
 
 // Instance is a singleton Set: one config type, fixed key "default".
 type Instance[C any] struct {
 	inner *Set[string, C]
+	mu    sync.Mutex
 	cfg   C
 }
 
@@ -28,13 +32,17 @@ func (i *Instance[C]) Start(ctx context.Context) error {
 
 // Reload replaces config and restarts the unit.
 func (i *Instance[C]) Reload(cfg C) error {
+	i.mu.Lock()
 	i.cfg = cfg
+	i.mu.Unlock()
 	return i.inner.Reconcile(map[string]C{singletonKey: cfg})
 }
 
 // Replace atomically swaps build/equal and config, recreating the unit.
 func (i *Instance[C]) Replace(build BuildFunc[string, C], equal EqualFunc[C], cfg C) error {
+	i.mu.Lock()
 	i.cfg = cfg
+	i.mu.Unlock()
 	return i.inner.Replace(build, equal, map[string]C{singletonKey: cfg})
 }
 
@@ -70,6 +78,8 @@ func (i *Instance[C]) DroppedAuditEvents() uint64 {
 
 // Config returns the last applied configuration value.
 func (i *Instance[C]) Config() C {
+	i.mu.Lock()
+	defer i.mu.Unlock()
 	return i.cfg
 }
 
