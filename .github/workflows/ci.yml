@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go-version: ["1.24", "1.25", "1.26"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Vet
+        shell: bash
+        run: go vet ./...
+
+      - name: Test
+        shell: bash
+        run: go test -race -count=1 -timeout=120s -coverprofile=coverage.txt ./...
+
+      - name: Check coverage threshold
+        if: matrix.os == 'ubuntu-latest' && matrix.go-version == '1.26'
+        shell: bash
+        run: |
+          total=$(go tool cover -func=coverage.txt | tail -1 | awk '{print $3}' | tr -d '%')
+          echo "Total coverage: ${total}%"
+          echo "### Coverage: ${total}%" >> "$GITHUB_STEP_SUMMARY"
+          threshold=90
+          if [ "$(echo "$total < $threshold" | bc -l)" -eq 1 ]; then
+            echo "::error::Coverage ${total}% is below threshold ${threshold}%"
+            exit 1
+          fi
+
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+
+      - name: Fuzz Diff
+        run: go test -fuzz='^FuzzDiff$' -fuzztime=30s .
+
+      - name: Fuzz ReconcileSet
+        run: go test -fuzz='^FuzzReconcileSet$' -fuzztime=30s .
+
+  benchmark:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+
+      - name: Benchmark
+        shell: bash
+        run: go test -bench=Benchmark -benchmem -count=3 -run='^$' -timeout=30m ./... | tee benchmark.txt
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-${{ matrix.os }}
+          path: benchmark.txt
+          retention-days: 90
+
+  profile:
+    runs-on: windows-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+
+      - name: Run profiling
+        shell: pwsh
+        run: .\a-report-pprof.ps1 -MinBenchSec 1 -MaxBenchSec 3 -TargetSamples 150
+
+      - name: Upload profiling report
+        uses: actions/upload-artifact@v7
+        with:
+          name: profiling-report
+          path: |
+            a-report-*.md
+            profiles/
+          retention-days: 90
